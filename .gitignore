@@ -1,0 +1,5 @@
+model/*.hdf5
+scaler/*.dump
+conf/*.conf
+log/*.log
+fx/__pycache__
