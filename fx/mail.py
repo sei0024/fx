@@ -5,7 +5,7 @@ from email.utils import formatdate
 
 # コンフィグ
 config = configparser.ConfigParser()
-config.read('./conf/fx.conf')
+config.read('/home/sei0024/fx/conf/fx.conf')
 FROM_ADDRESS = config['mail']['from_address']
 TO_ADDRESS = config['mail']['to_address']
 PASSWORD = config['mail']['password']

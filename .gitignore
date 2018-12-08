@@ -3,3 +3,4 @@ scaler/*.dump
 conf/*.conf
 log/*.log
 fx/__pycache__
+json/*.json

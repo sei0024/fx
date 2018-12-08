@@ -7,7 +7,7 @@ from utils import date_to_iso, iso_to_date, date_to_str
 
 # コンフィグ
 config = configparser.ConfigParser()
-config.read('./conf/fx.conf')
+config.read('/home/sei0024/fx/conf/fx.conf')
 ACCOUNT_ID = config['oanda']['account_id']
 ACCESS_TOKEN = config['oanda']['access_token']
 INSTRUMENT = config['oanda']['instrument']

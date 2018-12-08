@@ -5,11 +5,11 @@ from oanda import get_position, has_position, close_positions
 
 # コンフィグ
 config = configparser.ConfigParser()
-config.read('./conf/fx.conf')
+config.read('/home/sei0024/fx/conf/fx.conf')
 THRESHOLD = float(config['balance']['threshold'])
 
 # ロギンング
-logging.config.fileConfig('./conf/logging.conf')
+logging.config.fileConfig('/home/sei0024/fx/conf/logging.conf')
 logger = logging.getLogger()
 
 # メイン

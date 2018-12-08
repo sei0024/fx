@@ -12,7 +12,7 @@ from keras.layers import Dense, LSTM
 
 # コンフィグ
 config = configparser.ConfigParser()
-config.read('./conf/fx.conf')
+config.read('/home/sei0024/fx/conf/fx.conf')
 GRANULARITY = config['oanda']['granularity']
 MYSQL_HOST = config['mysql']['host']
 MYSQL_PORT = config['mysql']['port']
@@ -27,7 +27,7 @@ Y_SCALER_PATH = config['train']['y_scaler_path']
 MODEL_PATH = config['train']['model_path']
 
 # ロギンング
-logging.config.fileConfig('./conf/logging.conf')
+logging.config.fileConfig('/home/sei0024/fx/conf/logging.conf')
 logger = logging.getLogger()
 
 logger.info('Start Train Process')
@@ -47,7 +47,7 @@ conn = connector.connect(
 )
 cur = conn.cursor(dictionary=True)
 sql = "SELECT open,high,low,close FROM candles.usd_jpy_{granularity} ".format(
-    granularity=GRANULARITY)
+    granularity=GRANULARITY.lower())
 sql += "WHERE time BETWEEN '{from_date}' AND '{to_date}'".format(
     from_date=from_date, to_date=to_date)
 cur.execute(sql)

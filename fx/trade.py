@@ -1,4 +1,5 @@
 # ライブラリ定義
+import json
 import logging
 import logging.config
 import configparser
@@ -13,7 +14,7 @@ from oanda import close_positions, get_units, create_order
 
 # コンフィグ
 config = configparser.ConfigParser()
-config.read('./conf/fx.conf')
+config.read('/home/sei0024/fx/conf/fx.conf')
 ACCOUNT_ID = config['oanda']['account_id']
 ACCESS_TOKEN = config['oanda']['access_token']
 GRANULARITY = config['oanda']['granularity']
@@ -28,9 +29,10 @@ WINDOW_SIZE = int(config['train']['window_size'])
 X_SCALER_PATH = config['train']['x_scaler_path']
 Y_SCALER_PATH = config['train']['y_scaler_path']
 MODEL_PATH = config['train']['model_path']
+PRE_PREDICT_PATH = config['trade']['pre_predict_path']
 
 # ロギンング
-logging.config.fileConfig('./conf/logging.conf')
+logging.config.fileConfig('/home/sei0024/fx/conf/logging.conf')
 logger = logging.getLogger()
 
 logger.info('Start Trade Process')
@@ -70,6 +72,9 @@ balance = get_balance()
 price = get_price()
 position = get_position()
 
+# 前回の予測結果を取得
+pre_predict = float(json.load(open(PRE_PREDICT_PATH, 'r'))['pre_predict'])
+
 # 情報を表示
 logger.info('balance: {}, predict: {}, ask: {}, bid: {}'.format(
     balance, predict, price['ask'], price['bid'])
@@ -78,7 +83,7 @@ logger.info('balance: {}, predict: {}, ask: {}, bid: {}'.format(
 # ロングポジションがある場合
 if int(position['long']['units']) > 0:
     long_price = float(position['long']['averagePrice'])
-    if long_price <= predict:
+    if (long_price <= predict) or (pre_predict > predict):
         logger.info('KEEP: long={}, predict={}'.format(long_price, predict))
     else:
         logger.info('CLOSE: logn={}, predict={}'.format(long_price, predict))
@@ -87,7 +92,7 @@ if int(position['long']['units']) > 0:
 # ショートポジションがある場合
 if int(position['short']['units']) > 0:
     short_price = float(position['short']['averagePrice'])
-    if short_price >= predict:
+    if (short_price >= predict) or (pre_predict < predict):
         logger.info('KEEP: short={}, predict={}'.format(long_price, predict))
     else:
         close_positions(ACCOUNT_ID, instrument=INSTRUMENT)
@@ -110,5 +115,8 @@ if (int(position['long']['units']) <= 0) and (int(position['short']['units']) <=
         logger.info('SHORT: predict={}'.format(predict))
     else:
         logger.info('NOTHING: predict={}'.format(predict))
+
+# 予測結果を保存
+json.dump({'pre_predict': predict}, open(PRE_PREDICT_PATH, 'w')) 
 
 logger.info('Finish Trade Process')
